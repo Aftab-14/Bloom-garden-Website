@@ -1,0 +1,229 @@
+@startuml
+!theme plain
+
+title User Onboarding & Plant Assignment Flow
+
+actor User
+participant "Web UI" as UI
+participant "Auth Service" as Auth
+participant "User Service" as UserSvc
+participant "Plant Service" as PlantSvc
+participant "Database" as DB
+participant "Animation Engine" as Anim
+
+== User Registration ==
+User -> UI: Access registration page
+UI -> Anim: Display panda mascot
+note right
+    Panda appears with welcoming animation
+    Background shows floating leaves
+end note
+
+User -> UI: Enter email and password
+UI -> Anim: Panda nods for valid input
+UI -> Auth: POST /auth/register
+    note right
+        Input: {
+            "email": "user@example.com",
+            "password": "securePassword123",
+            "terms_accepted": true
+        }
+    end note
+
+Auth -> DB: Create user record
+Auth -> UserSvc: Initialize user profile
+Auth --> UI: Registration successful
+    note right
+        Output: {
+            "user_id": "uuid",
+            "verification_sent": true,
+            "next_step": "personality_quiz"
+        }
+    end note
+
+UI -> Anim: Panda celebration dance
+UI -> User: Redirect to personality quiz
+
+== Personality Quiz & Plant Assignment ==
+UI -> UserSvc: GET /quiz/personality
+UserSvc --> UI: Return quiz questions
+    note right
+        Output: {
+            "questions": [
+                {
+                    "id": 1,
+                    "text": "How do you handle stress?",
+                    "options": ["A", "B", "C", "D"],
+                    "trait_mapping": {...}
+                }
+            ]
+        }
+    end note
+
+User -> UI: Complete quiz answers
+UI -> UserSvc: POST /quiz/submit
+    note right
+        Input: {
+            "user_id": "uuid",
+            "answers": [
+                {"question_id": 1, "answer": "A"},
+                {"question_id": 2, "answer": "C"}
+            ]
+        }
+    end note
+
+UserSvc -> UserSvc: Calculate personality type
+UserSvc -> PlantSvc: Assign plant based on personality
+    note right
+        Input: {
+            "user_id": "uuid",
+            "personality_type": "SUNFLOWER"
+        }
+    end note
+
+PlantSvc -> DB: Create plant record
+PlantSvc --> UserSvc: Plant created
+UserSvc --> UI: Quiz results with plant
+    note right
+        Output: {
+            "personality_type": "SUNFLOWER",
+            "plant_id": "uuid",
+            "plant_stage": "SEED",
+            "growth_points": 0,
+            "description": "Optimistic and energetic..."
+        }
+    end note
+
+UI -> Anim: Display plant growth animation
+UI -> User: Show plant assignment results
+
+== Daily Mood Logging Flow ==
+User -> UI: Access mood tracker
+UI -> UserSvc: GET /user/current-mood-status
+UserSvc --> UI: Return today's mood status
+    note right
+        Output: {
+            "has_logged_today": false,
+            "current_streak": 5,
+            "plant_growth_points": 150
+        }
+    end note
+
+User -> UI: Select mood and add notes
+UI -> UserSvc: POST /mood/log
+    note right
+        Input: {
+            "user_id": "uuid",
+            "mood_value": 7,
+            "mood_emoji": "😊",
+            "energy_level": 6,
+            "anxiety_level": 3,
+            "notes": "Feeling good today!",
+            "tags": ["work", "positive"]
+        }
+    end note
+
+UserSvc -> DB: Save mood entry
+UserSvc -> PlantSvc: Award growth points
+    note right
+        Input: {
+            "plant_id": "uuid",
+            "activity_type": "MOOD_LOG",
+            "points": 10
+        }
+    end note
+
+PlantSvc -> DB: Update plant growth
+PlantSvc -> PlantSvc: Check for stage progression
+PlantSvc --> UserSvc: Growth update result
+    note right
+        Output: {
+            "points_added": 10,
+            "total_points": 160,
+            "stage_changed": false,
+            "current_stage": "SPROUT",
+            "celebration_triggered": false
+        }
+    end note
+
+UserSvc --> UI: Mood logged successfully
+UI -> Anim: Plant growth animation
+UI -> User: Show updated plant status
+
+== Community Forum Interaction ==
+User -> UI: Access community forums
+UI -> UserSvc: GET /forums/list
+UserSvc --> UI: Return available forums
+    note right
+        Output: {
+            "forums": [
+                {
+                    "id": "uuid",
+                    "name": "Anxiety Support",
+                    "category": "ANXIETY",
+                    "member_count": 1250,
+                    "recent_activity": "2 hours ago"
+                }
+            ]
+        }
+    end note
+
+User -> UI: Select forum and create post
+UI -> UserSvc: POST /forums/{forum_id}/posts
+    note right
+        Input: {
+            "title": "Dealing with work anxiety",
+            "content": "Looking for advice...",
+            "is_anonymous": true,
+            "tags": ["work", "anxiety", "advice"]
+        }
+    end note
+
+UserSvc -> DB: Create forum post
+UserSvc -> PlantSvc: Award community points
+UserSvc --> UI: Post created successfully
+    note right
+        Output: {
+            "post_id": "uuid",
+            "points_earned": 15,
+            "community_level_up": false
+        }
+    end note
+
+UI -> Anim: Community participation celebration
+UI -> User: Show post confirmation
+
+== Crisis Support Activation ==
+User -> UI: Click crisis support button
+UI -> UserSvc: POST /crisis/alert
+    note right
+        Input: {
+            "user_id": "uuid",
+            "trigger_type": "USER_INITIATED",
+            "current_location": "optional",
+            "immediate_danger": false
+        }
+    end note
+
+UserSvc -> DB: Log crisis alert
+UserSvc -> UserSvc: Get local crisis resources
+UserSvc --> UI: Return crisis resources
+    note right
+        Output: {
+            "crisis_hotlines": [
+                {
+                    "name": "National Suicide Prevention Lifeline",
+                    "phone": "988",
+                    "available_24_7": true
+                }
+            ],
+            "local_resources": [...],
+            "chat_support_available": true
+        }
+    end note
+
+UI -> User: Display crisis resources immediately
+UI -> UserSvc: Track resource access
+UserSvc -> DB: Log resource interaction
+
+@enduml
