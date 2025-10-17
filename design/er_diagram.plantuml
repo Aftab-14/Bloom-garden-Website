@@ -1,0 +1,364 @@
+@startuml
+!theme plain
+
+' User Management
+entity "users" as users {
+    * id : uuid <<PK>>
+    --
+    * email : varchar(255) <<UK>>
+    * username : varchar(50) <<UK>>
+    * password_hash : varchar(255)
+    * created_at : timestamp
+    * updated_at : timestamp
+    * last_active : timestamp
+    * is_verified : boolean
+    * is_active : boolean
+    * personality_type : enum
+    * crisis_support_enabled : boolean
+    * email_notifications : boolean
+    * timezone : varchar(50)
+}
+
+entity "user_profiles" as profiles {
+    * user_id : uuid <<PK,FK>>
+    --
+    display_name : varchar(100)
+    bio : text
+    avatar_url : varchar(500)
+    total_points : integer
+    current_streak : integer
+    best_streak : integer
+    privacy_show_community : boolean
+    privacy_allow_dm : boolean
+    privacy_share_mood : boolean
+    privacy_anonymous_mode : boolean
+}
+
+' Plant System
+entity "plants" as plants {
+    * id : uuid <<PK>>
+    * user_id : uuid <<FK>>
+    --
+    * plant_type : enum
+    * current_stage : enum
+    * growth_points : integer
+    * created_at : timestamp
+    * last_watered : timestamp
+    special_traits : json
+    stage_progression : json
+}
+
+entity "plant_activities" as plant_activities {
+    * id : uuid <<PK>>
+    * plant_id : uuid <<FK>>
+    --
+    * activity_type : enum
+    * points_earned : integer
+    * timestamp : timestamp
+    description : varchar(255)
+    metadata : json
+}
+
+' Wellness Data
+entity "mood_entries" as moods {
+    * id : uuid <<PK>>
+    * user_id : uuid <<FK>>
+    --
+    * mood_value : integer
+    * timestamp : timestamp
+    mood_emoji : varchar(10)
+    energy_level : integer
+    anxiety_level : integer
+    notes : text
+    tags : json
+    weather : varchar(50)
+    location : varchar(100)
+}
+
+entity "journal_entries" as journals {
+    * id : uuid <<PK>>
+    * user_id : uuid <<FK>>
+    --
+    * created_at : timestamp
+    * updated_at : timestamp
+    title : varchar(200)
+    * content : text
+    mood_before : integer
+    mood_after : integer
+    is_private : boolean
+    word_count : integer
+    ai_insights : text
+    sentiment_score : decimal
+}
+
+entity "habits" as habits {
+    * id : uuid <<PK>>
+    * user_id : uuid <<FK>>
+    --
+    * name : varchar(100)
+    description : text
+    * frequency : enum
+    target_count : integer
+    current_streak : integer
+    best_streak : integer
+    is_active : boolean
+    * created_at : timestamp
+    category : varchar(50)
+    reminder_time : time
+}
+
+entity "habit_completions" as habit_completions {
+    * id : uuid <<PK>>
+    * habit_id : uuid <<FK>>
+    --
+    * completed_at : timestamp
+    notes : varchar(500)
+    mood_impact : integer
+    difficulty_rating : integer
+}
+
+' Community Features
+entity "forums" as forums {
+    * id : uuid <<PK>>
+    --
+    * name : varchar(100)
+    * description : text
+    * category : enum
+    is_private : boolean
+    member_count : integer
+    * created_at : timestamp
+    guidelines : text
+    is_active : boolean
+}
+
+entity "forum_memberships" as forum_memberships {
+    * forum_id : uuid <<PK,FK>>
+    * user_id : uuid <<PK,FK>>
+    --
+    * joined_at : timestamp
+    role : enum
+    is_moderator : boolean
+    last_read_at : timestamp
+}
+
+entity "forum_posts" as forum_posts {
+    * id : uuid <<PK>>
+    * forum_id : uuid <<FK>>
+    * author_id : uuid <<FK>>
+    --
+    * title : varchar(200)
+    * content : text
+    * created_at : timestamp
+    updated_at : timestamp
+    is_anonymous : boolean
+    upvotes : integer
+    downvotes : integer
+    reply_count : integer
+    is_pinned : boolean
+    is_locked : boolean
+    tags : json
+    last_activity : timestamp
+}
+
+entity "forum_replies" as forum_replies {
+    * id : uuid <<PK>>
+    * post_id : uuid <<FK>>
+    * author_id : uuid <<FK>>
+    --
+    * content : text
+    * created_at : timestamp
+    updated_at : timestamp
+    is_anonymous : boolean
+    upvotes : integer
+    downvotes : integer
+    parent_reply_id : uuid <<FK>>
+    depth_level : integer
+}
+
+entity "support_circles" as support_circles {
+    * id : uuid <<PK>>
+    * facilitator_id : uuid <<FK>>
+    --
+    * name : varchar(100)
+    description : text
+    * max_members : integer
+    current_members : integer
+    * created_at : timestamp
+    is_active : boolean
+    meeting_schedule : varchar(100)
+    next_meeting : timestamp
+}
+
+entity "circle_memberships" as circle_memberships {
+    * circle_id : uuid <<PK,FK>>
+    * user_id : uuid <<PK,FK>>
+    --
+    * joined_at : timestamp
+    role : enum
+    last_active : timestamp
+    participation_score : integer
+}
+
+entity "direct_messages" as messages {
+    * id : uuid <<PK>>
+    * sender_id : uuid <<FK>>
+    * recipient_id : uuid <<FK>>
+    --
+    * content : text
+    * sent_at : timestamp
+    read_at : timestamp
+    is_encrypted : boolean
+    message_type : enum
+    attachment_url : varchar(500)
+    reply_to_id : uuid <<FK>>
+}
+
+' Gamification
+entity "achievements" as achievements {
+    * id : uuid <<PK>>
+    --
+    * name : varchar(100)
+    * description : text
+    icon_url : varchar(500)
+    points_value : integer
+    category : enum
+    requirements : json
+    is_secret : boolean
+    rarity : enum
+    * created_at : timestamp
+}
+
+entity "user_achievements" as user_achievements {
+    * user_id : uuid <<PK,FK>>
+    * achievement_id : uuid <<PK,FK>>
+    --
+    * earned_at : timestamp
+    progress : integer
+    is_completed : boolean
+    notification_sent : boolean
+}
+
+entity "challenges" as challenges {
+    * id : uuid <<PK>>
+    --
+    * title : varchar(100)
+    * description : text
+    * start_date : timestamp
+    * end_date : timestamp
+    points_reward : integer
+    participant_count : integer
+    challenge_type : enum
+    requirements : json
+    is_active : boolean
+    created_by : uuid <<FK>>
+}
+
+entity "challenge_participations" as challenge_participations {
+    * challenge_id : uuid <<PK,FK>>
+    * user_id : uuid <<PK,FK>>
+    --
+    * joined_at : timestamp
+    progress : integer
+    is_completed : boolean
+    completion_date : timestamp
+    points_earned : integer
+}
+
+' Moderation & Safety
+entity "moderation_reports" as reports {
+    * id : uuid <<PK>>
+    * reporter_id : uuid <<FK>>
+    --
+    * reported_content_id : uuid
+    * content_type : enum
+    * reason : enum
+    description : text
+    * status : enum
+    * created_at : timestamp
+    reviewed_at : timestamp
+    moderator_id : uuid <<FK>>
+    action_taken : varchar(255)
+    notes : text
+}
+
+entity "crisis_alerts" as crisis_alerts {
+    * id : uuid <<PK>>
+    * user_id : uuid <<FK>>
+    --
+    content : text
+    * severity_level : enum
+    * created_at : timestamp
+    responded_at : timestamp
+    responder_id : uuid <<FK>>
+    resources_provided : json
+    follow_up_scheduled : boolean
+    resolution_notes : text
+}
+
+entity "blocked_users" as blocked_users {
+    * blocker_id : uuid <<PK,FK>>
+    * blocked_id : uuid <<PK,FK>>
+    --
+    * blocked_at : timestamp
+    reason : varchar(255)
+    is_active : boolean
+}
+
+' Notifications
+entity "notifications" as notifications {
+    * id : uuid <<PK>>
+    * user_id : uuid <<FK>>
+    --
+    * type : enum
+    * title : varchar(200)
+    * content : text
+    * created_at : timestamp
+    read_at : timestamp
+    action_url : varchar(500)
+    metadata : json
+    priority : enum
+}
+
+' Relationships
+users ||--|| profiles : "profiles.user_id -> users.id"
+users ||--|| plants : "plants.user_id -> users.id"
+users ||--o{ moods : "moods.user_id -> users.id"
+users ||--o{ journals : "journals.user_id -> users.id"
+users ||--o{ habits : "habits.user_id -> users.id"
+users ||--o{ forum_posts : "forum_posts.author_id -> users.id"
+users ||--o{ forum_replies : "forum_replies.author_id -> users.id"
+users ||--o{ messages : "messages.sender_id -> users.id"
+users ||--o{ messages : "messages.recipient_id -> users.id"
+users ||--o{ crisis_alerts : "crisis_alerts.user_id -> users.id"
+users ||--o{ notifications : "notifications.user_id -> users.id"
+
+plants ||--o{ plant_activities : "plant_activities.plant_id -> plants.id"
+habits ||--o{ habit_completions : "habit_completions.habit_id -> habits.id"
+
+forums ||--o{ forum_posts : "forum_posts.forum_id -> forums.id"
+forums ||--o{ forum_memberships : "forum_memberships.forum_id -> forums.id"
+users ||--o{ forum_memberships : "forum_memberships.user_id -> users.id"
+
+forum_posts ||--o{ forum_replies : "forum_replies.post_id -> forum_posts.id"
+forum_replies ||--o{ forum_replies : "forum_replies.parent_reply_id -> forum_replies.id"
+
+support_circles ||--o{ circle_memberships : "circle_memberships.circle_id -> support_circles.id"
+users ||--o{ circle_memberships : "circle_memberships.user_id -> users.id"
+users ||--o{ support_circles : "support_circles.facilitator_id -> users.id"
+
+achievements ||--o{ user_achievements : "user_achievements.achievement_id -> achievements.id"
+users ||--o{ user_achievements : "user_achievements.user_id -> users.id"
+
+challenges ||--o{ challenge_participations : "challenge_participations.challenge_id -> challenges.id"
+users ||--o{ challenge_participations : "challenge_participations.user_id -> users.id"
+users ||--o{ challenges : "challenges.created_by -> users.id"
+
+users ||--o{ reports : "reports.reporter_id -> users.id"
+users ||--o{ reports : "reports.moderator_id -> users.id"
+
+users ||--o{ blocked_users : "blocked_users.blocker_id -> users.id"
+users ||--o{ blocked_users : "blocked_users.blocked_id -> users.id"
+
+messages ||--o{ messages : "messages.reply_to_id -> messages.id"
+
+@enduml
