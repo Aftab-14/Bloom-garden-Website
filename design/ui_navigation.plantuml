@@ -1,0 +1,205 @@
+@startuml
+!theme plain
+
+[*] --> Landing : Initial Visit
+
+state "Landing Page" as Landing {
+    Landing : Welcome message
+    Landing : Feature highlights
+    Landing : Login/Register buttons
+    Landing : Crisis support access
+}
+
+state "Authentication" as Auth {
+    state "Login" as Login {
+        Login : Animated panda mascot
+        Login : Email/password fields
+        Login : Social login options
+        Login : Forgot password link
+    }
+    
+    state "Register" as Register {
+        Register : Animated panda reactions
+        Register : Email/password/confirm
+        Register : Terms acceptance
+        Register : Email verification
+    }
+    
+    state "Personality Quiz" as Quiz {
+        Quiz : 10-15 questions
+        Quiz : Progress indicator
+        Quiz : Plant assignment reveal
+        Quiz : Celebration animation
+    }
+}
+
+state "Main Application" as App {
+    state "Dashboard" as Dashboard {
+        Dashboard : Plant visualization
+        Dashboard : Quick mood check-in
+        Dashboard : Today's habits
+        Dashboard : Community feed
+        Dashboard : Progress stats
+    }
+    
+    state "Wellness Tools" as Wellness {
+        state "Mood Tracker" as Mood {
+            Mood : Emoji/slider selection
+            Mood : Notes and tags
+            Mood : Trend visualization
+            Mood : Historical view
+        }
+        
+        state "Journal" as Journal {
+            Journal : Rich text editor
+            Journal : Voice recording
+            Journal : AI insights
+            Journal : Entry history
+        }
+        
+        state "Habits" as Habits {
+            Habits : Habit list
+            Habits : Streak tracking
+            Habits : Add new habit
+            Habits : Progress charts
+        }
+        
+        state "Mindfulness" as Mindfulness {
+            Mindfulness : Breathing exercises
+            Mindfulness : Guided meditations
+            Mindfulness : Relaxation visuals
+            Mindfulness : Session timer
+        }
+    }
+    
+    state "Community" as Community {
+        state "Forums" as Forums {
+            Forums : Forum categories
+            Forums : Recent posts
+            Forums : Search functionality
+            Forums : Create new post
+        }
+        
+        state "Forum Detail" as ForumDetail {
+            ForumDetail : Post list
+            ForumDetail : Filtering options
+            ForumDetail : Join/leave forum
+            ForumDetail : Forum guidelines
+        }
+        
+        state "Post Detail" as PostDetail {
+            PostDetail : Full post content
+            PostDetail : Reply thread
+            PostDetail : Voting system
+            PostDetail : Share options
+        }
+        
+        state "Support Circles" as Circles {
+            Circles : Available circles
+            Circles : My circles
+            Circles : Join requests
+            Circles : Create circle
+        }
+        
+        state "Direct Messages" as DM {
+            DM : Conversation list
+            DM : Message thread
+            DM : User search
+            DM : Message composer
+        }
+        
+        state "Challenges" as Challenges {
+            Challenges : Active challenges
+            Challenges : My progress
+            Challenges : Leaderboard
+            Challenges : Join challenge
+        }
+    }
+    
+    state "Profile" as Profile {
+        state "My Profile" as MyProfile {
+            MyProfile : Plant garden view
+            MyProfile : Achievement gallery
+            MyProfile : Statistics overview
+            MyProfile : Settings access
+        }
+        
+        state "Settings" as Settings {
+            Settings : Privacy controls
+            Settings : Notification preferences
+            Settings : Account management
+            Settings : Crisis contacts
+        }
+        
+        state "Achievements" as Achievements {
+            Achievements : Earned badges
+            Achievements : Progress tracking
+            Achievements : Achievement details
+            Achievements : Share options
+        }
+    }
+}
+
+state "Crisis Support" as Crisis {
+    Crisis : Emergency resources
+    Crisis : Local helplines
+    Crisis : Chat support
+    Crisis : Safety planning
+}
+
+' Navigation flows
+Landing --> Auth : Login/Register
+Auth --> Quiz : First-time registration
+Quiz --> Dashboard : Complete onboarding
+Auth --> Dashboard : Returning user login
+
+Dashboard --> Wellness : Access tools
+Dashboard --> Community : View community
+Dashboard --> Profile : User profile
+Dashboard --> Crisis : Emergency button
+
+' Wellness tool navigation
+Wellness --> Mood : Track mood
+Wellness --> Journal : Write entry
+Wellness --> Habits : Manage habits
+Wellness --> Mindfulness : Practice exercises
+Mood --> Dashboard : Back to dashboard
+Journal --> Dashboard : Back to dashboard
+Habits --> Dashboard : Back to dashboard
+Mindfulness --> Dashboard : Back to dashboard
+
+' Community navigation
+Community --> Forums : Browse forums
+Community --> Circles : Support circles
+Community --> DM : Direct messages
+Community --> Challenges : Community challenges
+Forums --> ForumDetail : Select forum
+ForumDetail --> PostDetail : Select post
+PostDetail --> ForumDetail : Back to forum
+Forums --> Community : Back to community
+Circles --> Community : Back to community
+DM --> Community : Back to community
+Challenges --> Community : Back to community
+
+' Profile navigation
+Profile --> MyProfile : View profile
+Profile --> Settings : Edit settings
+Profile --> Achievements : View achievements
+MyProfile --> Profile : Back to profile
+Settings --> Profile : Back to profile
+Achievements --> Profile : Back to profile
+
+' Global navigation
+Dashboard --> Landing : Logout
+Community --> Dashboard : Home
+Wellness --> Dashboard : Home
+Profile --> Dashboard : Home
+
+' Crisis support (accessible from anywhere)
+Dashboard --> Crisis : Crisis button
+Community --> Crisis : Crisis button
+Wellness --> Crisis : Crisis button
+Profile --> Crisis : Crisis button
+Crisis --> Dashboard : Return to app
+
+@enduml
