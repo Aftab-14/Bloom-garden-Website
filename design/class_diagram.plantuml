@@ -1,0 +1,363 @@
+@startuml
+!theme plain
+
+' User Management
+class User {
+    +id: UUID
+    +email: string
+    +username: string
+    +password_hash: string
+    +created_at: DateTime
+    +last_active: DateTime
+    +is_verified: boolean
+    +privacy_settings: PrivacySettings
+    +personality_type: PersonalityType
+    +crisis_support_enabled: boolean
+    +email_notifications: boolean
+    +getProfile(): UserProfile
+    +updatePrivacySettings(settings: PrivacySettings): void
+    +deactivateAccount(): void
+}
+
+class UserProfile {
+    +user_id: UUID
+    +display_name: string
+    +bio: string
+    +avatar_url: string
+    +join_date: DateTime
+    +total_points: number
+    +current_streak: number
+    +timezone: string
+    +updateProfile(data: ProfileData): void
+    +calculateTotalPoints(): number
+}
+
+enum PersonalityType {
+    SUNFLOWER
+    CACTUS
+    FERN
+    ROSE
+    BAMBOO
+}
+
+class PrivacySettings {
+    +show_in_community: boolean
+    +allow_direct_messages: boolean
+    +share_mood_trends: boolean
+    +anonymous_mode: boolean
+    +crisis_contact_permission: boolean
+}
+
+' Plant System
+class Plant {
+    +id: UUID
+    +user_id: UUID
+    +plant_type: PersonalityType
+    +current_stage: GrowthStage
+    +growth_points: number
+    +created_at: DateTime
+    +last_watered: DateTime
+    +special_traits: string[]
+    +addGrowthPoints(points: number): void
+    +checkGrowthStage(): GrowthStage
+    +triggerCelebration(): CelebrationEvent
+}
+
+enum GrowthStage {
+    SEED
+    SPROUT
+    BUD
+    BLOOM
+    THRIVE
+}
+
+class PlantActivity {
+    +id: UUID
+    +plant_id: UUID
+    +activity_type: ActivityType
+    +points_earned: number
+    +timestamp: DateTime
+    +description: string
+}
+
+enum ActivityType {
+    MOOD_LOG
+    JOURNAL_ENTRY
+    HABIT_COMPLETION
+    COMMUNITY_INTERACTION
+    MINDFULNESS_SESSION
+    CHALLENGE_PARTICIPATION
+}
+
+' Wellness Tools
+class MoodEntry {
+    +id: UUID
+    +user_id: UUID
+    +mood_value: number
+    +mood_emoji: string
+    +energy_level: number
+    +anxiety_level: number
+    +notes: string
+    +timestamp: DateTime
+    +tags: string[]
+    +calculateTrend(): MoodTrend
+}
+
+class JournalEntry {
+    +id: UUID
+    +user_id: UUID
+    +title: string
+    +content: string
+    +mood_before: number
+    +mood_after: number
+    +is_private: boolean
+    +created_at: DateTime
+    +updated_at: DateTime
+    +word_count: number
+    +ai_insights: string
+    +generateInsights(): void
+    +updateContent(content: string): void
+}
+
+class Habit {
+    +id: UUID
+    +user_id: UUID
+    +name: string
+    +description: string
+    +frequency: HabitFrequency
+    +target_count: number
+    +current_streak: number
+    +best_streak: number
+    +is_active: boolean
+    +created_at: DateTime
+    +completeHabit(): HabitCompletion
+    +calculateStreak(): number
+}
+
+enum HabitFrequency {
+    DAILY
+    WEEKLY
+    CUSTOM
+}
+
+class HabitCompletion {
+    +id: UUID
+    +habit_id: UUID
+    +completed_at: DateTime
+    +notes: string
+    +mood_impact: number
+}
+
+' Community Features
+class Forum {
+    +id: UUID
+    +name: string
+    +description: string
+    +category: ForumCategory
+    +is_private: boolean
+    +member_count: number
+    +created_at: DateTime
+    +moderator_ids: UUID[]
+    +guidelines: string
+    +addMember(user_id: UUID): void
+    +removeMember(user_id: UUID): void
+}
+
+enum ForumCategory {
+    ANXIETY
+    DEPRESSION
+    POSITIVITY
+    SLEEP
+    RELATIONSHIPS
+    GENERAL
+}
+
+class ForumPost {
+    +id: UUID
+    +forum_id: UUID
+    +author_id: UUID
+    +title: string
+    +content: string
+    +is_anonymous: boolean
+    +created_at: DateTime
+    +updated_at: DateTime
+    +upvotes: number
+    +reply_count: number
+    +is_pinned: boolean
+    +tags: string[]
+    +addReply(reply: ForumReply): void
+    +updateContent(content: string): void
+}
+
+class ForumReply {
+    +id: UUID
+    +post_id: UUID
+    +author_id: UUID
+    +content: string
+    +is_anonymous: boolean
+    +created_at: DateTime
+    +upvotes: number
+    +parent_reply_id: UUID
+    +updateContent(content: string): void
+}
+
+class SupportCircle {
+    +id: UUID
+    +name: string
+    +description: string
+    +max_members: number
+    +current_members: number
+    +created_at: DateTime
+    +facilitator_id: UUID
+    +is_active: boolean
+    +meeting_schedule: string
+    +addMember(user_id: UUID): boolean
+    +scheduleSession(datetime: DateTime): void
+}
+
+class DirectMessage {
+    +id: UUID
+    +sender_id: UUID
+    +recipient_id: UUID
+    +content: string
+    +sent_at: DateTime
+    +read_at: DateTime
+    +is_encrypted: boolean
+    +message_type: MessageType
+    +markAsRead(): void
+}
+
+enum MessageType {
+    TEXT
+    VOICE
+    IMAGE
+    SYSTEM
+}
+
+' Gamification
+class Achievement {
+    +id: UUID
+    +name: string
+    +description: string
+    +icon_url: string
+    +points_value: number
+    +category: AchievementCategory
+    +requirements: string
+    +is_secret: boolean
+}
+
+enum AchievementCategory {
+    WELLNESS
+    COMMUNITY
+    CONSISTENCY
+    MILESTONE
+    SPECIAL
+}
+
+class UserAchievement {
+    +user_id: UUID
+    +achievement_id: UUID
+    +earned_at: DateTime
+    +progress: number
+    +is_completed: boolean
+}
+
+class Challenge {
+    +id: UUID
+    +title: string
+    +description: string
+    +start_date: DateTime
+    +end_date: DateTime
+    +points_reward: number
+    +participant_count: number
+    +challenge_type: ChallengeType
+    +requirements: string
+    +joinChallenge(user_id: UUID): void
+}
+
+enum ChallengeType {
+    DAILY_HABIT
+    COMMUNITY_KINDNESS
+    MINDFULNESS
+    MOOD_TRACKING
+    JOURNALING
+}
+
+' Moderation & Safety
+class ModerationReport {
+    +id: UUID
+    +reporter_id: UUID
+    +reported_content_id: UUID
+    +content_type: ContentType
+    +reason: ReportReason
+    +description: string
+    +status: ReportStatus
+    +created_at: DateTime
+    +reviewed_at: DateTime
+    +moderator_id: UUID
+    +action_taken: string
+}
+
+enum ContentType {
+    FORUM_POST
+    FORUM_REPLY
+    DIRECT_MESSAGE
+    USER_PROFILE
+}
+
+enum ReportReason {
+    HARASSMENT
+    INAPPROPRIATE_CONTENT
+    SPAM
+    SELF_HARM
+    CRISIS_SITUATION
+    OTHER
+}
+
+enum ReportStatus {
+    PENDING
+    UNDER_REVIEW
+    RESOLVED
+    DISMISSED
+}
+
+class CrisisAlert {
+    +id: UUID
+    +user_id: UUID
+    +content: string
+    +severity_level: CrisisSeverity
+    +created_at: DateTime
+    +responded_at: DateTime
+    +responder_id: UUID
+    +resources_provided: string[]
+    +follow_up_scheduled: boolean
+}
+
+enum CrisisSeverity {
+    LOW
+    MEDIUM
+    HIGH
+    EMERGENCY
+}
+
+' Relationships
+User ||--|| UserProfile : has
+User ||--|| Plant : owns
+User ||--o{ MoodEntry : logs
+User ||--o{ JournalEntry : writes
+User ||--o{ Habit : tracks
+User ||--o{ HabitCompletion : completes
+User ||--o{ ForumPost : creates
+User ||--o{ ForumReply : writes
+User ||--o{ DirectMessage : sends
+User ||--o{ UserAchievement : earns
+User ||--o{ ModerationReport : reports
+
+Plant ||--o{ PlantActivity : generates
+Forum ||--o{ ForumPost : contains
+ForumPost ||--o{ ForumReply : has
+SupportCircle ||--o{ User : includes
+Challenge ||--o{ User : participants
+Achievement ||--o{ UserAchievement : awarded
+
+@enduml
