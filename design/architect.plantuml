@@ -1,0 +1,98 @@
+@startuml
+!theme plain
+
+package "Frontend (Next.js + TypeScript)" {
+    [Web Application] as WebApp
+    [Component Library] as Components
+    [State Management] as State
+    [Animation Engine] as Animations
+    [PWA Service Worker] as PWA
+}
+
+package "Backend Services" {
+    [API Gateway] as Gateway
+    [Authentication Service] as Auth
+    [User Service] as UserSvc
+    [Plant System Service] as PlantSvc
+    [Community Service] as CommunitySvc
+    [Wellness Service] as WellnessSvc
+    [Notification Service] as NotificationSvc
+    [Moderation Service] as ModerationSvc
+    [Crisis Support Service] as CrisisSvc
+}
+
+package "Real-time Services" {
+    [WebSocket Server] as WS
+    [Chat Service] as Chat
+    [Live Updates] as LiveUpdates
+}
+
+package "Data Layer" {
+    database "PostgreSQL\n(Primary DB)" as PostgreSQL
+    database "Redis\n(Cache & Sessions)" as Redis
+    database "Vector DB\n(AI Embeddings)" as VectorDB
+    cloud "File Storage\n(Images/Audio)" as FileStorage
+}
+
+package "External Services" {
+    [Crisis Helpline APIs] as CrisisAPI
+    [Email Service] as EmailSvc
+    [AI/ML Services] as AISvc
+    [Analytics Service] as Analytics
+}
+
+package "Security & Monitoring" {
+    [Rate Limiter] as RateLimit
+    [Content Filter] as ContentFilter
+    [Audit Logger] as AuditLog
+    [Health Monitor] as HealthMonitor
+}
+
+' Frontend connections
+WebApp --> Gateway : HTTPS/REST
+WebApp --> WS : WebSocket
+Components --> State : State Updates
+Animations --> Components : UI Interactions
+PWA --> WebApp : Offline Support
+
+' Backend service connections
+Gateway --> Auth : Authentication
+Gateway --> UserSvc : User Operations
+Gateway --> PlantSvc : Plant Management
+Gateway --> CommunitySvc : Community Features
+Gateway --> WellnessSvc : Wellness Tools
+Gateway --> NotificationSvc : Notifications
+Gateway --> ModerationSvc : Content Moderation
+Gateway --> CrisisSvc : Crisis Support
+
+' Real-time connections
+WS --> Chat : Real-time Chat
+WS --> LiveUpdates : Live Community Updates
+Chat --> CommunitySvc : Message Storage
+LiveUpdates --> CommunitySvc : Activity Feed
+
+' Data connections
+UserSvc --> PostgreSQL : User Data
+PlantSvc --> PostgreSQL : Plant Progress
+CommunitySvc --> PostgreSQL : Community Data
+WellnessSvc --> PostgreSQL : Wellness Data
+Auth --> Redis : Session Storage
+NotificationSvc --> Redis : Queue Management
+ModerationSvc --> VectorDB : Content Analysis
+FileStorage --> UserSvc : Profile Images
+FileStorage --> CommunitySvc : Shared Media
+
+' External service connections
+CrisisSvc --> CrisisAPI : Emergency Resources
+NotificationSvc --> EmailSvc : Email Notifications
+ModerationSvc --> AISvc : Content Analysis
+UserSvc --> Analytics : User Behavior
+PlantSvc --> Analytics : Engagement Metrics
+
+' Security connections
+Gateway --> RateLimit : Request Limiting
+CommunitySvc --> ContentFilter : Content Filtering
+Gateway --> AuditLog : Security Logging
+Gateway --> HealthMonitor : System Health
+
+@enduml
